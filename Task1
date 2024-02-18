@@ -1,0 +1,65 @@
+# Task 1: Record the yield
+def record_yield(herd):
+    for cow, _ in herd.items():
+        print(f"Recording yields for cow {cow}:")
+        for day in range(1, 8):
+            herd[cow][day] = [0, 0]  # Initialize each day with two milking entries
+            for milking in range(1, 3):
+                yield_input = float(input(f"Enter yield for cow {cow} on day {day}, milking {milking}: "))
+                herd[cow][day][milking - 1] = yield_input  # Adjust milking index to match list index (0-based)
+
+
+# Task 2: Calculate the statistics
+def calculate_statistics(herd):
+    total_volume = 0
+    total_cows = len(herd)
+    for cow, yields in herd.items():
+        cow_total = sum(yield_data for day_data in yields.values() for yield_data in day_data)
+        total_volume += cow_total
+    average_yield = total_volume / (total_cows * 14)  # 2 milkings per day for 7 days
+    return round(total_volume), round(average_yield)
+
+
+# Task 3: Identify the most productive cow and low-yield cows
+def identify_cows(herd):
+    max_yield = 0
+    most_productive_cow = None
+    low_yield_cows = []
+    for cow, yields in herd.items():
+        cow_total = sum(yield_data for day_data in yields.values() for yield_data in day_data)
+        if cow_total > max_yield:
+            max_yield = cow_total
+            most_productive_cow = cow
+        low_days = sum(1 for day_data in yields.values() if sum(day_data) < 12)
+        if low_days >= 4:
+            low_yield_cows.append(cow)
+    return most_productive_cow, low_yield_cows
+
+
+# Main program
+def main():
+    herd = {}
+    num_cows = int(input("Enter the number of cows in the herd: "))
+    for i in range(1, num_cows + 1):
+        herd[i] = {day: [0, 0] for day in range(1, 8)}
+
+    record_yield(herd)
+    total_volume, average_yield = calculate_statistics(herd)
+    most_productive_cow, low_yield_cows = identify_cows(herd)
+
+    print("\nStatistics for the week:")
+    print(f"Total weekly volume of milk: {total_volume} litres")
+    print(f"Average yield per cow in a week: {average_yield} litres")
+    if most_productive_cow:
+        print(f"The most productive cow this week is {most_productive_cow}")
+    else:
+        print("No cow recorded yields this week.")
+    if low_yield_cows:
+        print("Cows with a yield of less than 12 litres for four or more days this week:")
+        print(low_yield_cows)
+    else:
+        print("No cow had a yield of less than 12 litres for four or more days this week.")
+
+
+if __name__ == "__main__":
+    main()
